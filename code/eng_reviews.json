@@ -1,0 +1,252 @@
+{
+    "paper": [
+        {
+            "id": 3,
+            "preliminary_decision": "accept",
+            "review": [
+                {
+                    "confidence": "3",
+                    "evaluation": "2",
+                    "id": 2,
+                    "lan": "en",
+                    "orientation": "1",
+                    "remarks": "",
+                    "text": "This paper aims to show new deployment alternative for recommender systems. To this end, the authors use two variations CHC genetic algorithm.  - It's a good job. - It is clear and very detailed.  - There are inconsistencies in the notation should be improved. The formula (7) has a notation different from the rest of the equations. - On the same point, the figure (3) refers to \"perfil\", \"pesos\", \"euclidiana\" and \"vecindad\"; these words aren't related with the text. - I think that the results shown in graphs would be more useful if they are shown in tables.",
+                    "timespan": "2010-07-05"
+                },
+                {
+                    "confidence": "3",
+                    "evaluation": "0",
+                    "id": 3,
+                    "lan": "en",
+                    "orientation": "-1",
+                    "remarks": "",
+                    "text": "The paper is well structured. It follows a logical sequence of sections.  The paper does not fix to the Infonor conference template.  The english grammar is poor. It makes the paper difficult to read and follow. Either:  a) rewrite the paper in spanish, or b) make the paper reviewed by a professional traslator  Most of the references are not recent (2005-2010). No new work since 2003? Some references do not indicate year.  Problems with equations, fonts, etc.  Figures 5-17 are not referenced/discussed/explained. It may be better to present these figures as a table.  Both, result analysis and conclusions, declare that GA CHC is better than Pearson´s correlation Algorithm. However, this analysis and conclusion is not supported for a wide variety of situations and conditions. Therefore, a true validation work is missing.",
+                    "timespan": "2010-07-05"
+                }
+            ]
+        },
+        {
+            "id": 8,
+            "preliminary_decision": "accept",
+            "review": [
+                {
+                    "confidence": "4",
+                    "evaluation": "1",
+                    "id": 1,
+                    "lan": "en",
+                    "orientation": "0",
+                    "remarks": "",
+                    "text": "The paper describes an experience concerning the automated inspection of spectra for the Pipeline Hubble Legacy Archive Grism data.  Comments:  In the conclusions the authors say that \"We have identified two classes of flawed spectra which were not picked up by the automatic classification because of their very small number of training samples. Per construction machine learning techniques can not classify such outliers.\" This sentence should be further explained. As Hastie, Tibshirani, and Friedman say in The Elements of Statistical Learning (see Chapter 7): \"it is too difficult to give a general rule on how much training data is enough; among other things, this depends on the signal-to-noise ratio of the underlying function, and the complexity of the models being fit to the data. \" So, by just saying that the number of training samples is small you do not provide enough information to decide whether machine learning techniques are adequate or not to solve a problem.  Other minor comments:  + If reference [2] has not yet been written or published it should be deleted from the paper.  The dataset may be of scientific importance.  It is mainly descriptive.",
+                    "timespan": "2010-07-05"
+                },
+                {
+                    "confidence": "4",
+                    "evaluation": "2",
+                    "id": 2,
+                    "lan": "en",
+                    "orientation": "1",
+                    "remarks": "",
+                    "text": "This manuscript addresses an interesting solution based in machine learning techniques to classify spectra legacy data of the Hubble Space Telescope in order to publish the results and \"good\" spectra in Internet to scientific community. The manuscript is well-written and results are robust. Experiment is sound and the manuscript seems acceptable in the current form. The work can be short, but very interesting to the Infonor and JCC community.  The main problem of the paper is that it is difficult to compare results for the classifiers utilized. A confusion matrix and parameters for each classifier could clarify results.",
+                    "timespan": "2010-07-05"
+                },
+                {
+                    "confidence": "5",
+                    "evaluation": "1",
+                    "id": 3,
+                    "lan": "en",
+                    "orientation": "0",
+                    "remarks": "",
+                    "text": "Interesting application domain.  Nothing new from a machine learning perspective. They authors should provide more information about the models they have obtained with the different classifiers (feature subset selection used, selected features, accuracies, statistical significance on the differences on accuracies, the models themselves, ...). Semi-supervised classification is the appropriate method for the last paragraph in the \"Methodology\" section.",
+                    "timespan": "2010-07-05"
+                }
+            ]
+        },
+        {
+            "id": 12,
+            "preliminary_decision": "accept",
+            "review": [
+                {
+                    "confidence": "3",
+                    "evaluation": "2",
+                    "id": 2,
+                    "lan": "en",
+                    "orientation": "0",
+                    "remarks": "",
+                    "text": "This paper presents a software tool that is useful in the context of software engineering. The authors do a good job describing the technical details of the tool. However, there is little information about the novel aspects of the proposed tool, How the proposal compares to other existing tools (if any)?",
+                    "timespan": "2010-07-05"
+                }
+            ]
+        },
+        {
+            "id": 19,
+            "preliminary_decision": "accept",
+            "review": [
+                {
+                    "confidence": "4",
+                    "evaluation": "2",
+                    "id": 1,
+                    "lan": "en",
+                    "orientation": "1",
+                    "remarks": "",
+                    "text": "This paper is very interesting, I like the idea, and to make it a work publishable in vennue reaching a wider international audience it is necessary to validate the proposed ideas through extensive experimentation with actual data and users, please go ahead.",
+                    "timespan": "2010-07-05"
+                }
+            ]
+        },
+        {
+            "id": 30,
+            "preliminary_decision": "reject",
+            "review": [
+                {
+                    "confidence": "4",
+                    "evaluation": "-2",
+                    "id": 1,
+                    "lan": "en",
+                    "orientation": "-1",
+                    "remarks": "",
+                    "text": "I don't think the work reported in this paper is suitable for the SCCC conference. The author should consider reporting this experience on a conference more focused on practice in computer engineering than in CS reserarch. The material presented in the paper could be of interest for practicioners working with Oracle, namely a particular product.",
+                    "timespan": "2010-07-05"
+                }
+            ]
+        },
+        {
+            "id": 33,
+            "preliminary_decision": "accept",
+            "review": [
+                {
+                    "confidence": "4",
+                    "evaluation": "-1",
+                    "id": 2,
+                    "lan": "en",
+                    "orientation": "-1",
+                    "remarks": "Unless there is a strong info sci and business IT community for the conference, and unless the paper addresses its shortcomings (which are significant) - it just doesn't measure up.",
+                    "text": "Abstract: Needs to have a definition of ERP - can't assume the reader knows what this means.  Intro: Avoid 1 sentence paragraphs (page 1) The introduction is rather long - it seems to actually be two different sections: an introduction (1st four paragraphs) and 1+ page of background and hypothesis. Overall - at 1.5 pages the intro is rather long for a paper that is 4 pages total.  Methodology: I think there are a lot of assumptions in regards to what ERP are and how they work.  While the paper is a statistical study, it would have benefited with a context of an actual example.  The samples are from small to medium size companies (how many?) with 49 use case (how do these relate?).  Results: Discussion is too limited - it assumes that a reader is very familiar with the area, and that may not be the case.",
+                    "timespan": "2010-07-05"
+                }
+            ]
+        },
+        {
+            "id": 38,
+            "preliminary_decision": "accept",
+            "review": [
+                {
+                    "confidence": "4",
+                    "evaluation": "2",
+                    "id": 1,
+                    "lan": "en",
+                    "orientation": "0",
+                    "remarks": "",
+                    "text": "The paper introduces a segmentation procedure for breast tissue images using SVM.  General comments:  a) Concerning the proposed approach: The segmentation method introduced only considers local color/gray value information. Perhaps introducing other features related to the membrane's local (e.g. the membrane has symmetry properties that can be exploited) or global (e.g. continuity, approximately circular shape) properties may improve the segmentation results.  Feature selection is also a key component to improve performance. Use a feature selection procedure.  b) Concerning the experimentation: You should describe the experiments with sufficient detail so others can replicate them: a) Make your data publicly available b) Explain how you have selected the classifier's parameters (parameter selection in an SVM is critical and may improve notably the performance).  You should join Figs 10 and 9 in a single plot so we can better see the differences.  You only provide qualitative segmentation results (Figs. 12, 14, 15), but quantitative results are also very important. Specially when it comes to comparisons. You should quantitatively compare your algorithm with other competing works in the literature.  c) Concerning paper organization: The paper is well written and clearly introduces the problem, describes the relevant literature and presents the solution. I have a few comments concerning the paper organization: a) Problem statement and literature review (intro and theoretical framework sections) are in my opinion a bit long, compared to other important sections, e.g. feature extraction and experimentation which are just one paragraph each. b) Although English is in general correct, there are some small mistakes that could be solved by having it read by a professional. c) There are two \"proposed method\" sections  Well written paper. Good literature review.  It only shows very preliminary results.",
+                    "timespan": "2010-07-05"
+                },
+                {
+                    "confidence": "4",
+                    "evaluation": "1",
+                    "id": 3,
+                    "lan": "en",
+                    "orientation": "-1",
+                    "remarks": "",
+                    "text": "The paper presents a medical test based on images of tissue sections. The approach proposed to cancer cells segmentation (membrane localisation) is based on local pixel features and SVM classification.  The paper describes quite well the practical problem it deals with (cancer cells segmentation on images) and it is generally well written.  - The paper approach described in the paper seems a first try on the problem and follows others in a quite similar (but new) problem. Moreover, the paper concludes that the proposed approach is not good enough.  - The features used for classification lacks of frequency information around each pixel (although it used the first derivative with sobel). Most texture descriptors in the literature use frequency information from gabor wavelets, fourier coefficients, DCT, etc. Why not use this kind of information? Why you have chosen this 7 features and not other ones? The paper lacks of experimental evaluation on different features sets.",
+                    "timespan": "2010-07-05"
+                }
+            ]
+        },
+        {
+            "id": 69,
+            "preliminary_decision": "accept",
+            "review": [
+                {
+                    "confidence": "4",
+                    "evaluation": "0",
+                    "id": 1,
+                    "lan": "en",
+                    "orientation": "-1",
+                    "remarks": "",
+                    "text": "This is a developed application to support information with sounds. Although it is a particular situation to aid with the use of sounds, it does not presents new knowledge in any areas or has any type of empirical validation; one from the user point of view might add some value.",
+                    "timespan": "2013-07-05"
+                }
+            ]
+        },
+        {
+            "id": 128,
+            "preliminary_decision": "accept",
+            "review": [
+                {
+                    "confidence": "4",
+                    "evaluation": "1",
+                    "id": 3,
+                    "lan": "en",
+                    "orientation": "0",
+                    "remarks": "* I recommend to change the title in order to reflect the paper' body",
+                    "text": "•I recommend to change the paper title in order to be according to paper‘ body •Review the English grammar, some but not all of the errors founded in the review are:  •Abstract   o what does it mean that for them?--> what does it mean that for them?   o …utilized to represent its appropriateness.--> …utilized to represent their appropriateness.   •Introducction   o …has like first phase… --> ?   o auscultating --> is it a verb?   •Background   o A systematic mapping study is a methodology that is used --> A systematic mapping study is a methodology used   o …of existing research on performance evaluation… -->…of existing research on the performance evaluation…   o Only Dieste and Juristo’s work [10] deals --> Only the work of Dieste and Juristo [10] deals   •Methodology   o Review the use of –ly with the verb to be   o Third question: What kind of studies does use with a higher frequency certain constructs for   o appropriateness of techniques? --> ? review the types question structure   •Classification schema   o In order to answer the research questions, the literature review focused --> literature or mapping?   •Analysis of the result   o in Figure 1 en DCM format -->in Figure 1 en DCM format.   o article --> paper   •Conclusions and future works   o For this reason, it is necessary that more proposals are carried out to help --> For this reason, it is necessary to carry out more proposals to help   •Figures: be careful on the figure´s title, the title must be following the figure  •Type of studies  •Paragraph after figure 5: Experimental (paragraph) o experiment (figure)  •Techniques considered: I recommend performing a mapping between domains and techniques and or with the constructors and show the a graphic of the results instead of the figure 8",
+                    "timespan": "2014-07-05"
+                }
+            ]
+        },
+        {
+            "id": 148,
+            "preliminary_decision": "accept",
+            "review": [
+                {
+                    "confidence": "3",
+                    "evaluation": "2",
+                    "id": 2,
+                    "lan": "en",
+                    "orientation": "1",
+                    "remarks": "",
+                    "text": "The authors made an exhaustive study on publication related to application of IA algorithms to Supply Chain regarding SCORM level affected, last years tendencies, future forecast of their use.  I would highly recommend:  1. use of color for better graphics understanding 2. mention names of authors or books, to not begin with references.  I miss a comparison table of efficiency, advantages, disadvantages and uses for all AI algorithms used.",
+                    "timespan": "2015-07-05"
+                }
+            ]
+        },
+        {
+            "id": 153,
+            "preliminary_decision": "accept",
+            "review": [
+                {
+                    "confidence": "3",
+                    "evaluation": "1",
+                    "id": 2,
+                    "lan": "en",
+                    "orientation": "0",
+                    "remarks": "",
+                    "text": "This work gives expected results and creates a structure for further research. I would suggest in addition of compass the use of radio waves for improving localization (WiFi for indoor and GPS for outdoor). In addition, there are some low cost platforms in the market that can be used and study, as for example Ardupilot or other similar systems. I was unable to see clearly enough, in the paper, the use of the camera; algorithms, environment settings, etc.; used for following robot. In Figure 7, it seems that camera trajectory is worse than that calculated with odometry, perhaps due to orientation error, but in my opinion it is not very clear during reading. Finally, I would suggest think if is it there some possible feedback of EKF results to odometry in order to reduce its error.",
+                    "timespan": "2015-07-05"
+                }
+            ]
+        },
+        {
+            "id": 154,
+            "preliminary_decision": "accept",
+            "review": [
+                {
+                    "confidence": "4",
+                    "evaluation": "2",
+                    "id": 1,
+                    "lan": "en",
+                    "orientation": "1",
+                    "remarks": "",
+                    "text": "This is an interesting article, present develop of a mobile robot use as beach cleaner.  I have 2 comments about the design, I think will be interesting define what is the dimension of collector and storage compartment for know what is the capacity of this cleaner.  In page 2 in the first paragraph a typo mistake was found.",
+                    "timespan": "2015-07-05"
+                }
+            ]
+        },
+        {
+            "id": 162,
+            "preliminary_decision": "accept",
+            "review": [
+                {
+                    "confidence": "3",
+                    "evaluation": "0",
+                    "id": 2,
+                    "lan": "en",
+                    "orientation": "0",
+                    "remarks": "",
+                    "text": "this paper applies an advanced algorithm to gait control, but is seems that more explanations are needed for a clearer understanding and comparison with other traditional algorithms. It depends on two another papers for its complete understanding. The math is very well stated but I was unable to see the advantages or purpose of that math regarding gait control. Also, it is not clear for the reader how fast or slow is the calculation time regarding task time.",
+                    "timespan": "2015-07-05"
+                }
+            ]
+        }
+    ]
+}
