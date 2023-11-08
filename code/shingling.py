@@ -19,7 +19,6 @@ class Shingling:
             self.shingles.add(shingle)
 
     def compute_hashes(self):
-        hashed_shingles = {}
         for shingle in self.shingles:
             hash_value = int(hashlib.sha256(shingle.encode('utf-8')).hexdigest(), 16)
             self.dic[shingle] = hash_value
