@@ -57,7 +57,7 @@ import random
 class MinHashing:
     '''
     Represents a minHash signature of a set (S) of shingles.
-    A minHash signature is a column-vector of k minHash values 
+    A minHash signature is a column-vector of k minHash values.
     '''
     def __init__(self, c, k, hashed_shingles):
         self.hashed_shingles = hashed_shingles
@@ -87,4 +87,28 @@ c = 100
 k = 2
 minhashing_obj = MinHashing(c, k, hashed_shingles)
 signature = minhashing_obj.build_signature()
-print(signature)
+#print(signature)
+
+def compare_signatures(signature1, signature2):
+    '''
+    Compares two minHash signatures and calculates the similarity
+    @param signature1: minHash signature
+    @param signature2: minHash signature
+    @return similarity: similarity between two minHash signatures
+    '''
+    count = 0
+    for i in range(len(signature1)):
+        if signature1[i] == signature2[i]:
+            count += 1
+    similarity = count / len(signature1)
+    return similarity
+
+# Test
+signature1 = [1, 4, 2]
+signature2 = [1, 2, 2]
+similarity = compare_signatures(signature1, signature2)
+print(similarity)
+
+
+
+
