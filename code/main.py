@@ -5,8 +5,6 @@ from shingling import Shingling
 from minhashing import MinHashing
 from comparesignatures import compare_signatures
 from tqdm import tqdm
-import time
-
 
 # ___ DATA PIPELINE ___
 SETTINGS = {
@@ -60,7 +58,10 @@ print(data_pipeline.df_documents)
 # ------------------------------------------------------------
 
 output = []  # List of minHash signatures
-
+c = (2**32)-1 # Example c value, you can choose any value for c
+n = 128 # Example n value, you can choose any value for n. Length of minHash signature
+prime = 4294967311
+minhashing_obj = MinHashing(n_signatures=n, seed=42, prime=prime)
 # Create minHash signature for documents
 for i in range(SETTINGS['n_documents']):
     document = data_pipeline.df_documents['ingredients'][i] # Example: document = data_pipeline.df_documents['document_text'][i]
@@ -71,12 +72,9 @@ for i in range(SETTINGS['n_documents']):
     shingling_obj.construct_shingles(document)
     shingling_obj.compute_hashes()
 
-    c = 10 # Example c value, you can choose any value for c
-    n = 50 # Example n value, you can choose any value for n
-    minhashing_obj = MinHashing(c, n, shingling_obj.hashed_shingles)
-    signature = minhashing_obj.build_signature()
+    signature = minhashing_obj(shingling_obj.hashed_shingles)
     output.append((signature, shingling_obj.hashed_shingles))
-
+ 
 df_similarity = pd.DataFrame(columns=['document1', 'document2', 'jaccard', 'estimated_similarity'])
 # Calculate Jaccard similarity and estimation of similarity
 for i in tqdm(range(SETTINGS['n_documents'])):
@@ -85,10 +83,6 @@ for i in tqdm(range(SETTINGS['n_documents'])):
         estimated_similarity = compare_signatures(output[i][0], output[j][0])
         
         df_similarity = pd.concat([df_similarity, pd.DataFrame({'document1': [i], 'document2': [j], 'jaccard': [jaccard], 'estimated_similarity': [estimated_similarity]})], ignore_index=True)
-
-
-# Print document with a jaccard of > 0.8
-#print(similarity[similarity['jaccard'] > 0.05])
 
 # Print the first 50 sorted by jaccard 
 print(df_similarity.sort_values(by=['jaccard'], ascending=False).head(50))

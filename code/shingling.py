@@ -1,5 +1,3 @@
-import hashlib
-
 class Shingling:
     '''
     One Shingling-object per document
@@ -20,7 +18,7 @@ class Shingling:
 
     def compute_hashes(self):
         for shingle in self.shingles:
-            hash_value = int(hashlib.sha256(shingle.encode('utf-8')).hexdigest(), 16)
+            hash_value = hash(shingle)
             self.dic[shingle] = hash_value
             self.hashed_shingles.add(hash_value)
         return self.hashed_shingles
