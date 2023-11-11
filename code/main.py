@@ -1,54 +1,20 @@
-import json
 import pandas as pd
-from comparesets import jaccard_similarity # Compares Jaccard similarity of two sets of hashed shingles
-from shingling import Shingling
-from minhashing import MinHashing
-from comparesignatures import compare_signatures
+from classes import jaccard_similarity # Compares Jaccard similarity of two sets of hashed shingles
+from classes import Shingling
+from classes import MinHashing
+from classes import compare_signatures
+from classes import DataPipeline
 from tqdm import tqdm
 
 # ___ DATA PIPELINE ___
 SETTINGS = {
     'n_documents': 250,  # Max number of documents = 17 
-    'file_path': 'C:/Github/ID2222/code/',
+    'file_path': 'C:/Github/ID2222/data/',
     'file_name': 'recipes.json'
 }
 
-class DataPipeline:
-    """
-    Compiles document texts and their information in a pandas dataframe for easy access
-    """
-    def __init__(self):
-        self.file_path = SETTINGS['file_path']
-        self.file_name = SETTINGS['file_name']
-        self.df_documents = pd.DataFrame()
-        self.read_json_file()
-
-    def read_json_file(self):
-        """
-        Read json file, fetch data, and then store it in a dataframe
-        """
-        if self.file_name == 'eng_reviews.json':
-            self.df_documents = pd.DataFrame(columns=['paper_id', 'review_id', 'document_text'])
-            with open(self.file_path + self.file_name) as file:
-                data = json.load(file)
-                for i in data['paper']:
-                    for j in i['review']:
-                        df_temp = pd.DataFrame(
-                            {'paper_id': [i['id']], 'review_id': [j['id']], 'document_text': [j['text']]})
-                        self.df_documents = pd.concat([self.df_documents, df_temp], ignore_index=True)
-        elif self.file_name == 'recipes.json':
-            self.df_documents = pd.DataFrame(columns=['recipe_id', 'ingredients'])
-            with open(self.file_path + self.file_name) as file:
-                data = json.load(file)
-                for index, i in enumerate(data):
-                    if index >= SETTINGS['n_documents']:
-                        break
-                    df_temp = pd.DataFrame(
-                        {'recipe_id': [i['id']], 'ingredients': ' '.join(i['ingredients'])})
-                    self.df_documents = pd.concat([self.df_documents, df_temp], ignore_index=True)
-
 # Create a DataPipeline-object
-data_pipeline = DataPipeline()
+data_pipeline = DataPipeline(SETTINGS)
 print(data_pipeline.df_documents)
 
 # > Example: Print dataframe
