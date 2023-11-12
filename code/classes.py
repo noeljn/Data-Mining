@@ -3,9 +3,41 @@ import json
 import random
 import time
 
+class candit_eval():
+    @staticmethod
+
+    def candit_pair_sim(df_candidate_pairs, shingling_vectors):
+        sim = CompareSets().jaccard_similarity
+        # hashtable
+        hash_table = {}
+        jac_sim = pd.DataFrame(columns=['document1', 'document2', 'jaccard_similarity'])
+        for row in df_candidate_pairs.itertuples():
+            for pair in row.candidates:
+                if (pair, row.id) in hash_table or pair == row.id:
+                    continue
+                document1 = row.id
+                document2 = pair
+                # Get shingle where doc_id = document1 (row.id)
+                shingle1 = shingling_vectors.loc[shingling_vectors['doc_id'] == document1]['shingles']
+                shingle1 = shingle1.iloc[0]
+                # Get shingle where doc_id = document2 (pair)
+                shingle2 = shingling_vectors.loc[shingling_vectors['doc_id'] == document2]['shingles']
+                shingle2 = shingle2.iloc[0]
+                jaccard = sim(shingle1, shingle2)
+                jac_sim = pd.concat([jac_sim, pd.DataFrame({'document1': [document1], 'document2': [document2], 'jaccard_similarity': [jaccard]})], ignore_index=True)
+                hash_table[(document1, document2)] = jaccard
+                hash_table[(document2, document1)] = jaccard
+        # Drop all rows where jaccard_similarity < threshold
+        #jac_sim = jac_sim[jac_sim['jaccard_similarity'] >= 0.8]
+
+        return jac_sim
+
+    def __call__(self, df_candidate_pairs, shingling_vectors):
+        return self.candit_pair_sim(df_candidate_pairs, shingling_vectors)
+
 class Evaluation():
 
-    def __init__(self, k, signature_size, seed, num_bands, num_buckets, SETTINGS):
+    def __init__(self, k, signature_size, seed, num_bands, num_buckets, SETTINGS, LSH=False):
         self.k = k                          # Size of shingles
         self.signature_size = signature_size    # Number of minHash signatures
         self.seed = seed                    # Seed for minHashing
@@ -28,25 +60,53 @@ class Evaluation():
         shingling_vectors = shingling_obj(df_documents)    # Create shingling vectors
 
         # ___ JACCARD SIMILARITY (CompareSets) ___
-        compare_sets = CompareSets()
-        df_jaccard = compare_sets(shingling_vectors)        # Calculate Jaccard similarity, store in dataframe
+        if LSH == False:
+            compare_sets = CompareSets()
+            df_jaccard = compare_sets(shingling_vectors)        # Calculate Jaccard similarity, store in dataframe
 
         # ___ MINHASHING ___
         minhashing_obj = MinHashing(signature_size=self.signature_size, seed=self.seed)
         minhash_signatures= minhashing_obj(shingling_vectors)   
 
         # ___ COMPARE SIGNATURES (Estimate similarity) ___
-        compare_signatures = CompareSignatures()
-        df_estimated_similarity = compare_signatures(minhash_signatures)
+        if LSH == False:
+            compare_signatures = CompareSignatures()
+            df_estimated_similarity = compare_signatures(minhash_signatures)
 
         # ___ LSH ___
-        lsh_obj = LSH(signature_size=self.signature_size, num_bands=self.num_bands, num_buckets=self.num_buckets)
-        df_candidate_pairs = lsh_obj(minhash_signatures)
+        if LSH == True:
+            lsh_obj = LSH(signature_size=self.signature_size, num_bands=self.num_bands, num_buckets=self.num_buckets)
+            df_candidate_pairs = lsh_obj(minhash_signatures)
+
+            sim = CompareSets().jaccard_similarity
+            # hashtable
+            hash_table = {}
+            jac_sim = pd.DataFrame(columns=['document1', 'document2', 'jaccard_similarity'])
+            for row in df_candidate_pairs.itertuples():
+                for pair in row.candidates:
+                    if (pair, row.id) in hash_table or pair == row.id:
+                        continue
+                    document1 = row.id
+                    document2 = pair
+                    # Get shingle where doc_id = document1 (row.id)
+                    shingle1 = shingling_vectors.loc[shingling_vectors['doc_id'] == document1]['shingles']
+                    shingle1 = shingle1.iloc[0]
+                    # Get shingle where doc_id = document2 (pair)
+                    shingle2 = shingling_vectors.loc[shingling_vectors['doc_id'] == document2]['shingles']
+                    shingle2 = shingle2.iloc[0]
+                    jaccard = sim(shingle1, shingle2)
+                    jac_sim = pd.concat([jac_sim, pd.DataFrame({'document1': [document1], 'document2': [document2], 'jaccard_similarity': [jaccard]})], ignore_index=True)
+                    hash_table[(document1, document2)] = jaccard
+                    hash_table[(document2, document1)] = jaccard
+
+            # Drop all rows where jaccard_similarity < threshold
+            jac_sim = jac_sim[jac_sim['jaccard_similarity'] >= 0.4]
 
         end = time.time()
         elapsed_time = end - start_timer
 
-        print('Elapsed time: ', elapsed_time)
+        #print('Elapsed time: ', elapsed_time)
+        return elapsed_time
 
 # Bonus assignment           
 class LSH:
