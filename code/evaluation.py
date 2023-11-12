@@ -30,7 +30,6 @@ def execution_time():
 
     # Save the results
     times.to_csv('C:/Github/ID2222/results/evaluation_times_lsh.csv', index=False)
-    
 
 
 def make_graph():
