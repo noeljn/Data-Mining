@@ -53,12 +53,6 @@ class Apriori():
                 pruned_candidates.add(candidate)
         return pruned_candidates
 
-    #def generator(self, baskets, min_support):
-    #    while True:
-    #        yield 
-
-    #for _ in tqdm(generator(baskets, min_support)):
-
 
     def apriori(self, baskets, min_support):
         """
@@ -105,3 +99,54 @@ class Apriori():
         # Create dataframe
         df_frequent_sets = pd.DataFrame(items_support_list)
         return df_frequent_sets
+    
+class AssociationRule():
+
+    def __init__(self, frequent_sets, min_confidence, n):
+        self.frequent_sets = frequent_sets
+        self.min_confidence = min_confidence
+        self.n = n
+
+    def generate_rules(self):
+        """
+        Generate association rules from frequent itemsets.
+        • Confidence (A --> B) = Support(A and B) / Support(A)
+        • Interest = P(A and B) - P(A)P(B) = Confidence - P(B)
+        """
+        rules = []
+
+        for _, row in self.frequent_sets.iterrows():
+            items = row['Item']
+            support_itemset = row['Support']
+
+            # Generate all possible combinations of items in the frequent itemset
+            for j in range(1, len(items)):
+                for antecedent in combinations(items, j):
+                    antecedent = set(antecedent)    # Antecedent is a set of items
+                    consequent = items - antecedent # Consequent is the rest of the items in the itemset
+
+                    # Find the support of the antecedent and consequent
+                    support_antecedent = self.frequent_sets[self.frequent_sets['Item'] == antecedent]['Support'].values[0] if antecedent else 0
+                    support_consequent = self.frequent_sets[self.frequent_sets['Item'] == consequent]['Support'].values[0] if consequent else 0
+        
+                    # Calculate confidence
+                    confidence = support_itemset / support_antecedent
+                    # Confidence({1, 4}--->{2}) = Support({1,4})/Support({1,2,4}) = 2/2 = 1.0
+
+                    # Calculate interest
+                    interest = confidence - (support_consequent/self.n)
+                    # Interest({1, 4}--->{2}): 1.0 - (6/7) = 0.1428571428571429 
+                    
+                    interest = interest if interest >= 0 else 0
+
+                    if confidence >= self.min_confidence:
+                        rules.append({'A': antecedent, 'B': consequent, 'Confidence': round(confidence,3), 'Interest': round(interest,3)})
+
+            # • Confidence (4 --> 3) = Support({3, 4}) / Support({4})
+            # • Confidence (4 --> 3) = 3 / 5 = 0.6
+
+        return pd.DataFrame(rules)
+
+    def __call__(self):
+        rules = self.generate_rules()
+        return rules
