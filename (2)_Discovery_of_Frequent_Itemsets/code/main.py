@@ -4,7 +4,7 @@ from classes import *
 
 
 SETTINGS = {
-    'data_path': 'data/test.dat',
+    'data_path': 'data/transactions.dat',
     'min_support': 0.01,
     'n': 100000
 }
@@ -20,15 +20,15 @@ print(len(dataset.data))
 
 #print(big_df)
 
-#apriori = Apriori(dataset.data, min_support=SETTINGS['min_support'], n = SETTINGS['n'], parallel=False)
-apriori = Apriori(dataset.data, min_support=2/7, n = 7, parallel=False)
-df_frequent_sets = apriori()
+apriori = Apriori(dataset.data, min_support=SETTINGS['min_support'], n = SETTINGS['n'], parallel=False)
+#apriori = Apriori(dataset.data, min_support=2/7, n = 7, parallel=False)
+df_frequent_sets, frequent_sets = apriori() # Returns a dataframe and a list of frequent sets
 
 #print(df_frequent_sets)
 
-#association_rule = AssociationRule(df_frequent_sets, min_confidence=0.5, n = 7)
-#rules = association_rule()
-#print(rules)
+association_rule = AssociationRule(frequent_sets, min_confidence=0.5, n = 7) # Returns a list of association rules
+rules = association_rule()
+print(rules)
 
 
 

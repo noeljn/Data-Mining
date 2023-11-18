@@ -54,17 +54,24 @@ class Apriori():
 
     def generate_candidates(self, frequent_sets, k):
         """
-        Generate candidates for the next iteration.
+        Generates only candidates whose all subsets have sufficient support.
+        This approache ensures that we are only generating and checking the 
+        candidates that have a chance of being frequent, which is the main idea 
+        behind pruning in the Apriori algorithm.
+
         @param frequent_sets: Dictionary of frequent sets, e.g. {key = item: value = itemsets_id_with_item}
+        @param k: Size of the itemsets to generate
         """
         prev = list(frequent_sets.keys())
+        if k == 2:
+            prev = [set([item]) for item in prev]
 
         candidates = {}
         for itemset1 in prev:
             for itemset2 in prev:
                 if itemset1 != itemset2:
-                    candidate = set(itemset1).union(itemset2)
-                    if len(candidate) == k:
+                    candidate = set(itemset1).union(itemset2) 
+                    if len(candidate) == k: # If the number of items in the candidate is equal to k
                         candidates[tuple(candidate)] = 0
             
         tuples_list = list(candidates.keys())
@@ -88,12 +95,13 @@ class Apriori():
 
         k = 2   # Size of itemsets
         # Generate candidates for the first iteration
-        candidates = list(combinations(frequent_items.keys(), k))
+        #candidates = list(combinations(frequent_items.keys(), k))
+        candidates = self.generate_candidates(frequent_sets, k)
 
         # Create a TQDM progress bar
-        #progress_bar = tqdm(total=len(candidates), desc='Candidates', leave=False)
-        print(f'k = {k}')
+        progress_bar = tqdm(total=len(candidates), desc='Candidates', leave=False)
         while candidates:
+            print(f'k = {k}')
             # Count occurrences of candidates in buckets
             if self.parallel:
                 pool = mp.Pool(mp.cpu_count())
@@ -109,10 +117,10 @@ class Apriori():
             # Generate candidates for the next iteration
             k += 1
             
-            print('Get new candidates')
+            print(f'Get new candidates for k = {k}')
             candidates = self.generate_candidates(frequent_sets, k)
-            #progress_bar.update()   # Update progress bar
-            #progress_bar.refresh()  # Refresh progress bar
+            progress_bar.update()   # Update progress bar
+            progress_bar.refresh()  # Refresh progress bar
 
             
         return output
@@ -120,20 +128,18 @@ class Apriori():
     def __call__(self):
         frequent_sets = self.apriori(self.baskets, min_support=self.min_support)
 
-
-        # TODO: Add 'interest' column later when generating association rules
         df_frequent_sets = pd.DataFrame(columns=['Itemset', 'Support'])
         for key, value in frequent_sets.items():
             df_temp = pd.DataFrame({'Itemset': [key], 'Support': [len(value)]})
             df_frequent_sets = pd.concat([df_frequent_sets, df_temp], axis=0, ignore_index=True)            
         print(df_frequent_sets)
 
-        return df_frequent_sets
+        return df_frequent_sets, frequent_sets
     
 class AssociationRule():
 
     def __init__(self, frequent_sets, min_confidence, n):
-        self.frequent_sets = frequent_sets
+        self.frequent_sets = frequent_sets   # Dictionary of frequent sets, e.g. {key = itemset: value = basket_id_containing_itemset}
         self.min_confidence = min_confidence
         self.n = n
 
@@ -141,39 +147,39 @@ class AssociationRule():
         """
         Generate association rules from frequent itemsets.
         • Confidence (A --> B) = Support(A and B) / Support(A)
-        • Interest = P(A and B) - P(A)P(B) = Confidence - P(B)
+        • Interest = P(A and B) - P(A)P(B) = Confidence(A --> B) - P(B)
         """
         rules = []
 
-        for _, row in self.frequent_sets.iterrows():
-            items = row['Item']
-            support_itemset = row['Support']
+        for itemset in self.frequent_sets.keys():
+            itemset_support = len(self.frequent_sets[itemset])   # Support of the itemset
+            if type(itemset) == int:
+                itemset = {itemset}
+            else:
+                itemset = set(itemset)
 
             # Generate all possible combinations of items in the frequent itemset
-            for j in range(1, len(items)):
-                for antecedent in combinations(items, j):
-                    antecedent = set(antecedent)    # Antecedent is a set of items
-                    consequent = items - antecedent # Consequent is the rest of the items in the itemset
+            for j in range(1, len(itemset)):
+                for antecedent in combinations(itemset, j):
+                    antecedent = set(antecedent)      # Antecedent is a set of items
+                    consequent = itemset - antecedent # Consequent is the rest of the items in the itemset
 
                     # Find the support of the antecedent and consequent
-                    support_antecedent = self.frequent_sets[self.frequent_sets['Item'] == antecedent]['Support'].values[0] if antecedent else 0
-                    support_consequent = self.frequent_sets[self.frequent_sets['Item'] == consequent]['Support'].values[0] if consequent else 0
-        
+                    look_up_key_a = tuple(antecedent) if len(antecedent) > 1 else antecedent.pop() # Get index/key of the antecedent
+                    look_up_key_c = tuple(consequent) if len(consequent) > 1 else consequent.pop()
+                    support_antecedent = len(self.frequent_sets[look_up_key_a])
+                    support_consequent = len(self.frequent_sets[look_up_key_c])
+                    
                     # Calculate confidence
-                    confidence = support_itemset / support_antecedent
+                    confidence = itemset_support / support_antecedent
                     # Confidence({1, 4}--->{2}) = Support({1,4})/Support({1,2,4}) = 2/2 = 1.0
 
                     # Calculate interest
                     interest = confidence - (support_consequent/self.n)
                     # Interest({1, 4}--->{2}): 1.0 - (6/7) = 0.1428571428571429 
-                    
-                    interest = interest if interest >= 0 else 0
 
                     if confidence >= self.min_confidence:
-                        rules.append({'A': antecedent, 'B': consequent, 'Confidence': round(confidence,3), 'Interest': round(interest,3)})
-
-            # • Confidence (4 --> 3) = Support({3, 4}) / Support({4})
-            # • Confidence (4 --> 3) = 3 / 5 = 0.6
+                        rules.append({'A': look_up_key_a, 'B': look_up_key_c, 'Confidence': round(confidence,3), 'Interest': round(interest,3)})
 
         return pd.DataFrame(rules)
 
