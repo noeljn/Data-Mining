@@ -1,7 +1,6 @@
 import pandas as pd
 from tqdm import tqdm
 import multiprocessing as mp
-import ast 
 class Dataset():
 
     def __init__(self, data_path: str, n: int):
@@ -35,89 +34,100 @@ from itertools import combinations
 
 class Apriori():
 
-    def __init__(self, baskets, min_support, parallel=True):
+    def __init__(self, baskets, min_support, n, parallel=True):
         self.baskets = baskets
         self.min_support = min_support
+        self.n = n
         self.parallel = parallel
 
-    def generate_candidates(self, baskets, k):
-        """
-        Generate candidate itemsets of size k from a list of baskets.
-        """
-        candidates = set()
-        
-        for basket in tqdm(baskets, desc='Generating candidates for k={}'.format(k)):
-            candidates.update(combinations(baskets[basket], k))   
-        return candidates
-
-    def prune_candidates(self, candidates, prev_frequent_set, k):
-        """
-        Prune candidates that do not have all (k-1)-subsets in the previous frequent set.
-        """
-        singleton_set = set()
-        for e in prev_frequent_set.keys():
-            singleton_set.update(e)
-        pruned_candidates = set()
-        for candidate in tqdm(candidates, desc='Pruning candidates for k={}'.format(k), position=0, leave=True):
-            subsets = combinations(candidate, k-1)
-            if all(subset in singleton_set for subset in subsets):
-                pruned_candidates.add(candidate)
-        return pruned_candidates
-    
-    def count_candidates(self, candidate, baskets, s):
+    def count_candidates(self, candidate, frequent_items, s):
         """
         Count the occurrences of candidates in a list of baskets.
         """
-        intersection = set.intersection(*[set(baskets[i]) for i in candidate])
+        set_list = []
+        for i in candidate:
+            set_list.append(set(frequent_items[i]))
+        intersection = set.intersection(*set_list)
         if len(intersection) >= s:
-            return {candidate: len(intersection)}
+            return {candidate: intersection}
         return {}
 
+    def generate_candidates(self, frequent_sets, k):
+        """
+        Generate candidates for the next iteration.
+        @param frequent_sets: Dictionary of frequent sets, e.g. {key = item: value = itemsets_id_with_item}
+        """
+        prev = list(frequent_sets.keys())
+
+        candidates = {}
+        for itemset1 in prev:
+            for itemset2 in prev:
+                if itemset1 != itemset2:
+                    candidate = set(itemset1).union(itemset2)
+                    if len(candidate) == k:
+                        candidates[tuple(candidate)] = 0
+            
+        tuples_list = list(candidates.keys())
+        
+        return tuples_list
 
     def apriori(self, baskets, min_support):
         """
         A-Priori algorithm for finding frequent itemsets.
         """
-        #progress_bar = tqdm(desc='Main loop', leave=False)          # Progress bar
-        basket_count = len(baskets) # 100,000
-        s = min_support * basket_count # 1000 = 0.01 * 100,000
+        s = min_support * self.n 
 
-        k = 1   # Size of itemsets
-        candidates = self.generate_candidates(baskets, k)
-        print(candidates)
+        frequent_items = dict()
+        for key in baskets.keys():
+            if len(baskets[key]) >= s:
+                frequent_items[key] = baskets[key]
 
+        frequent_sets = frequent_items
+        output = frequent_items
+        # TODO: Prune here?
+
+        k = 2   # Size of itemsets
+        # Generate candidates for the first iteration
+        candidates = list(combinations(frequent_items.keys(), k))
+
+        # Create a TQDM progress bar
+        #progress_bar = tqdm(total=len(candidates), desc='Candidates', leave=False)
+        print(f'k = {k}')
         while candidates:
             # Count occurrences of candidates in buckets
             if self.parallel:
                 pool = mp.Pool(mp.cpu_count())
-                result = pool.starmap(self.count_candidates, [(candidate, baskets, s) for candidate in candidates])
+                result = pool.starmap(self.count_candidates, [(candidate, frequent_items, s) for candidate in candidates])
                 pool.close()
             else:
-                result = [self.count_candidates(candidate, baskets, s) for candidate in candidates]
+                result = []
+                for candidate in candidates:
+                    result.append(self.count_candidates(candidate, frequent_items, s))
 
-            print(result)
-            # Prune candidates that do not meet the minimum support
-            frequent_set = {candidate: support for candidate_support in result for candidate, support in candidate_support.items()}
-            print(frequent_set)
+            frequent_sets = {candidate: support for candidate_support in result for candidate, support in candidate_support.items()}
+            output.update(frequent_sets)
             # Generate candidates for the next iteration
             k += 1
-            candidates = self.generate_candidates(baskets, k)
-            candidates = self.prune_candidates(candidates, frequent_set, k)
+            
+            print('Get new candidates')
+            candidates = self.generate_candidates(frequent_sets, k)
             #progress_bar.update()   # Update progress bar
             #progress_bar.refresh()  # Refresh progress bar
 
-        return frequent_set
+            
+        return output
     
     def __call__(self):
         frequent_sets = self.apriori(self.baskets, min_support=self.min_support)
 
-        items_support_list = []
-        for itemset in frequent_sets:
-            for item, support in itemset:
-                items_support_list.append({'Item': set(item) , 'Support': support})
 
-        # Create dataframe
-        df_frequent_sets = pd.DataFrame(items_support_list)
+        # TODO: Add 'interest' column later when generating association rules
+        df_frequent_sets = pd.DataFrame(columns=['Itemset', 'Support'])
+        for key, value in frequent_sets.items():
+            df_temp = pd.DataFrame({'Itemset': [key], 'Support': [len(value)]})
+            df_frequent_sets = pd.concat([df_frequent_sets, df_temp], axis=0, ignore_index=True)            
+        print(df_frequent_sets)
+
         return df_frequent_sets
     
 class AssociationRule():
