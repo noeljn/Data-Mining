@@ -101,7 +101,6 @@ class Apriori():
         # Create a TQDM progress bar
         progress_bar = tqdm(total=len(candidates), desc='Candidates', leave=False)
         while candidates:
-            print(f'k = {k}')
             # Count occurrences of candidates in buckets
             if self.parallel:
                 pool = mp.Pool(mp.cpu_count())
@@ -116,8 +115,6 @@ class Apriori():
             output.update(frequent_sets)
             # Generate candidates for the next iteration
             k += 1
-            
-            print(f'Get new candidates for k = {k}')
             candidates = self.generate_candidates(frequent_sets, k)
             progress_bar.update()   # Update progress bar
             progress_bar.refresh()  # Refresh progress bar
@@ -131,8 +128,7 @@ class Apriori():
         df_frequent_sets = pd.DataFrame(columns=['Itemset', 'Support'])
         for key, value in frequent_sets.items():
             df_temp = pd.DataFrame({'Itemset': [key], 'Support': [len(value)]})
-            df_frequent_sets = pd.concat([df_frequent_sets, df_temp], axis=0, ignore_index=True)            
-        print(df_frequent_sets)
+            df_frequent_sets = pd.concat([df_frequent_sets, df_temp], axis=0, ignore_index=True)
 
         return df_frequent_sets, frequent_sets
     
