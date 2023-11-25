@@ -3,3 +3,5 @@ matplotlib
 json
 numpy
 seaborn
+networkx
+tqdm
