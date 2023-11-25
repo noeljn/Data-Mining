@@ -20,6 +20,8 @@ def test():
             triangles = triest(dataset.get_stream())
             end = time.time()
             estimations.append((i, m, triangles, end - start))
+            
+    print(estimations)
     
     with open("data/triest_impr.csv", "w") as f:
         writer = csv.writer(f)
