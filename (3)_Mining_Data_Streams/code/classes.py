@@ -136,20 +136,53 @@ class TriestImpr:
             self.process_edge(edge)
         return self.global_counter
 
-def plot(base_path, impr_path):
+def calculate_metrics(predictions, ground_truth):
+    # Calculate Mean Absolute Error (MAE)
+    mae = sum(abs(predictions - ground_truth)) / len(predictions)
+
+    # Calculate Mean Absolute Percentage Error (MAPE)
+    mape = 100 * sum(abs(predictions - ground_truth) / ground_truth) / len(predictions)
+
+    return mae, mape
+
+def plot(path_triest_base, path_triest_impr, ground_truth):
     # Read the first file
-    df1 = pd.read_csv(base_path)
+    df1 = pd.read_csv(path_triest_base)
+
     # Read the second file
-    df2 = pd.read_csv(impr_path)
+    df2 = pd.read_csv(path_triest_impr)
+
+
+    # Assuming you have predicted values from your data
+    predictions1 = df1["triangles"]
+    predictions2 = df2["triangles"]
+
     # Plot the first set of data in blue
-    plt.scatter(df1["M"], df1["triangles"], label="Triest Base", color="blue")
+    plt.scatter(df1["M"], predictions1, label="Triest-Base", color="blue")
+
     # Plot the second set of data in red
-    plt.scatter(df2["M"], df2["triangles"], label="Triest Impr", color="red")
+    plt.scatter(df2["M"], predictions2, label="Triest-Impr", color="red")
+
+    # Add a ground truth line at y=your_value
+    plt.axhline(y=ground_truth, color='green', linestyle='--', label='Ground Truth')
+
     plt.xlabel("M")
     plt.ylabel("Triangles")
     plt.title("Triest-Baseline vs Triest-Improved")
+    
     # Set the desired tick positions
     plt.xticks([1000, 5000, 10000])
-    # Show the legend to differentiate between the two datasets
+
+    # Show the legend to differentiate between the two datasets and ground truth
     plt.legend()
+
+    # Calculate MAE and MAPE for each file
+    mae1, mape1 = calculate_metrics(predictions1, ground_truth)
+    mae2, mape2 = calculate_metrics(predictions2, ground_truth)
+
+    print("MAE for Triest Base:", mae1)
+    print("MAPE for Triest Base:", mape1)
+    print("MAE for Triest Impr:", mae2)
+    print("MAPE for Triest Impr:", mape2)
+
     plt.show()
