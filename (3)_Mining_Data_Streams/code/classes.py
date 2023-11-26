@@ -4,6 +4,8 @@ import time
 import networkx as nx
 from tqdm import tqdm
 import csv
+import pandas as pd
+import matplotlib.pyplot as plt
 
 class Dataset():
 
@@ -134,5 +136,20 @@ class TriestImpr:
             self.process_edge(edge)
         return self.global_counter
 
-
-
+def plot(base_path, impr_path):
+    # Read the first file
+    df1 = pd.read_csv(base_path)
+    # Read the second file
+    df2 = pd.read_csv(impr_path)
+    # Plot the first set of data in blue
+    plt.scatter(df1["M"], df1["triangles"], label="Triest Base", color="blue")
+    # Plot the second set of data in red
+    plt.scatter(df2["M"], df2["triangles"], label="Triest Impr", color="red")
+    plt.xlabel("M")
+    plt.ylabel("Triangles")
+    plt.title("Triest-Baseline vs Triest-Improved")
+    # Set the desired tick positions
+    plt.xticks([1000, 5000, 10000])
+    # Show the legend to differentiate between the two datasets
+    plt.legend()
+    plt.show()
