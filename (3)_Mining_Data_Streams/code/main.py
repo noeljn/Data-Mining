@@ -28,4 +28,8 @@ def test():
         writer.writerow(["iteration", "M", "triangles", "time"])
         writer.writerows(estimations)
         
-test()
+
+
+
+
+plot()
