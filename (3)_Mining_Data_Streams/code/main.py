@@ -1,97 +1,85 @@
-from typing import Any, Tuple, Callable, Set, DefaultDict, FrozenSet
-import random
-import time
+from classes import *
 
-class Triest:
 
-    def __init__(self, M: int):
-        self.M = M
-        self.t = 0
-        self.global_counter = 0 # Global counter of triangles in the sample
-        self.local_counters = DefaultDict[int, int](int)
-        self.S = set()
+"""Number of triangles: 8611705.228852853
+Time: 263.90398049354553"""
+ 
 
-    def sample_edge(self, t: int) -> bool:
-
-        # Check if new edge can be inserted
-        if t <= self.M: # If the memory M has not been filled yet, then insert the current edge
-            return True
-        
-        # If memory M is full, then compute the probability of picking the current edge 
-        # from a pool containing it and all edges in the resevoir (sample).
-        # If probability is greater than a random number, replace a random edge in the sample with the current edge.
-        elif random.random() <= self.M / t:
-            self.S.remove(random.choice(list(self.S)))
-            return True
-        else:
-            return False
-        
-    def update_counters(self, operator: Callable[[int, int], int], edge: Tuple[int, int]) -> None:
-        u, v = edge # Edge is a tuple of two nodes u and v
-
-        # Get neighborhood for u and v, respectively
-        neighborhood_u = set(map(lambda x: x[1] if x[0] == u else x[0], filter(lambda x: x[0] == u or x[1] == u, self.S))) 
-        neighborhood_v = set(map(lambda x: x[1] if x[0] == v else x[0], filter(lambda x: x[0] == v or x[1] == v, self.S))) 
-
-        # Get neighbors of intersection of u and v
-        neighborhood_u_v = neighborhood_u.intersection(neighborhood_v)
-
-        # Update counters (global and local ones)
-        for c in neighborhood_u_v:
-            self.global_counter = operator(self.global_counter, 1)
-            self.local_counters[u] = operator(self.local_counters[u], 1)
-            self.local_counters[v] = operator(self.local_counters[v], 1)
-            self.local_counters[c] = operator(self.local_counters[c], 1)
-
-    def compute_xi(self) -> float:
-        return max(1, (self.t*(self.t - 1) * (self.t - 2)) / (self.M * (self.M - 1) * (self.M - 2)))
-        
-class TriestBase(Triest):
-
-    def __init__(self, M: int):
-        super().__init__(M)
-
-    def process_edge(self, edge: Tuple[int, int]) -> None:
-        self.t += 1
-        if self.sample_edge(self.t):
-            self.S.add(edge)
-            self.update_counters(lambda x, y: x + y, edge)
-
-    def __call__(self, edge_stream: Any) -> int:
-        for edge in edge_stream:
-            self.process_edge(edge)
-        return self.compute_xi() * self.global_counter
-
-def get_stream(path: str) -> Any:
-    with open(path, "r") as f:
-        for line in f.readlines():
-            yield tuple(map(int, line.split()))
-
-    #with open("data/facebook_combined.txt", "r") as f:
-    #    edge_stream = map(lambda x: tuple(map(int, x.split())), f.readlines())
-
-def main():
-    M = [5000]
-    path = "data/facebook_combined.txt"
-    iterations = 1
+def test():
+    M = [1000, 5000, 10000]
+    path = "data/web-NotreDame.txt"
+    dataset = Dataset(path)
+    iterations = 5
     estimations = []
 
     for m in M:
         for i in range(iterations):
             print(f"Running iteration {i} with M = {m}")
             start = time.time()
-            triest = TriestBase(m)
-            xi = triest(get_stream(path))
+            triest = TriestImpr(m)
+            triangles = triest(dataset.get_stream())
             end = time.time()
-            estimations.append(tuple((xi, end - start)))
+            estimations.append((i, m, triangles, end - start))
+            
+    print(estimations)
     
-    for i in range(len(estimations)):
-        print(f"Estimation {i}: {estimations[i]}")
+    with open("data/triest_impr.csv", "w") as f:
+        writer = csv.writer(f)
+        writer.writerow(["iteration", "M", "triangles", "time"])
+        writer.writerows(estimations)
         
 
-    # Read the edge stream from file
+
+def calculate_metrics(predictions, ground_truth):
+    # Calculate Mean Absolute Error (MAE)
+    mae = sum(abs(predictions - ground_truth)) / len(predictions)
+
+    # Calculate Mean Absolute Percentage Error (MAPE)
+    mape = 100 * sum(abs(predictions - ground_truth) / ground_truth) / len(predictions)
+
+    return mae, mape
+
+def plott(path_triest_base, path_triest_impr, ground_truth):
+    # Read the first file
+    df1 = pd.read_csv(path_triest_base)
+
+    # Read the second file
+    df2 = pd.read_csv(path_triest_impr)
 
 
+    # Assuming you have predicted values from your data
+    predictions1 = df1["triangles"]
+    predictions2 = df2["triangles"]
 
-if __name__ == "__main__":
-    main()
+    # Plot the first set of data in blue
+    plt.scatter(df1["M"], predictions1, label="File 1", color="blue")
+
+    # Plot the second set of data in red
+    plt.scatter(df2["M"], predictions2, label="File 2", color="red")
+
+    # Add a ground truth line at y=your_value
+    plt.axhline(y=ground_truth, color='green', linestyle='--', label='Ground Truth')
+
+    plt.xlabel("M")
+    plt.ylabel("Triangles")
+    plt.title("Triest-Baseline vs Triest-Improved")
+    
+    # Set the desired tick positions
+    plt.xticks([1000, 5000, 10000])
+
+    # Show the legend to differentiate between the two datasets and ground truth
+    plt.legend()
+
+    # Calculate MAE and MAPE for each file
+    mae1, mape1 = calculate_metrics(predictions1, ground_truth)
+    mae2, mape2 = calculate_metrics(predictions2, ground_truth)
+
+    print("MAE for Triest Base:", mae1)
+    print("MAPE for Triest Base:", mape1)
+    print("MAE for Triest Impr:", mae2)
+    print("MAPE for Triest Impr:", mape2)
+
+    plt.show()
+path_triest_base = "output/triest_base_facebook.csv"
+path_triest_impr = "output/triest_impr_facebook.csv"
+plott(path_triest_base, path_triest_impr, 1612010)
