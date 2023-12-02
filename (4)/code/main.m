@@ -6,8 +6,8 @@ E_1 = csvread('example1.dat');
 E_2 = csvread('example2.dat');
 
 %% Step 1
-A_1 = step1(E_1,k_1);
-A_2 = step1(E_2,k_2);
+A_1 = step1(E_1);
+A_2 = step1(E_2);
 % Plot
 figure(1);
 subplot(1,2,1);
@@ -57,7 +57,7 @@ plot(sort(V_2(:,2)), '-');
 title("Sorted Fiedler Vector A_2");
 
 %% Functions
-function [A] = step1(E,k)
+function [A] = step1(E)
     col1 = E(:,1);
     col2 = E(:,2);
     max_ids = max(max(col1,col2));
