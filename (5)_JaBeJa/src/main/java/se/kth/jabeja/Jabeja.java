@@ -19,6 +19,12 @@ public class Jabeja {
   private int round;
   private float T;
   private boolean resultFileCreated = false;
+  private int rounds = 0;
+  private final float min_T = (float) 0.00001;
+  // Settings
+  private boolean newAnnealing = true;
+  private boolean task2_2 = false;
+  private boolean bonusTask = false;
 
   //-------------------------------------------------------------------
   public Jabeja(HashMap<Integer, Node> graph, Config config) {
@@ -27,7 +33,13 @@ public class Jabeja {
     this.round = 0;
     this.numberOfSwaps = 0;
     this.config = config;
-    this.T = config.getTemperature();
+    if (newAnnealing) {
+      config.setDelta((float) 0.9);
+      this.T = 1;
+    } else {
+      this.T = config.getTemperature();
+      config.setDelta((float) 0.003);
+    }
   }
 
 
@@ -48,12 +60,43 @@ public class Jabeja {
   /**
    * Simulated analealing cooling function
    */
-  private void saCoolDown(){
+  private void saCoolDown() {
     // TODO for second task
-    if (T > 1)
-      T -= config.getDelta();
-    if (T < 1)
-      T = 1;
+    if (newAnnealing) {
+      rounds++;
+      if (T > min_T) {
+        T = T * config.getDelta();
+      } else {
+        T = min_T;
+      }
+      if (rounds % 400 == 0 && task2_2) {
+        T = 1;
+        rounds = 0;
+      }
+    } else {
+      if (T > 1)
+        T -= config.getDelta();
+      if (T < 1)
+        T = 1;
+    }
+
+  }
+
+  private double getAcceptanceProbability(int oldDegree, int newDegree) {
+    // "The acceptance probability function takes in the old cost, new cost,
+    // and current temperature and spits out a number between 0 and 1,
+    // which is a sort of recommendation on whether or not to jump to the new solution."
+
+    if (bonusTask) {
+      return 0.5;
+    } else {
+      double ap = Math.exp((newDegree - oldDegree) / T);
+      if (ap > 1) {
+        return 1;
+      } else {
+        return ap;
+      }
+    }
   }
 
   /**
@@ -109,9 +152,18 @@ public class Jabeja {
 
       double newDegree = Math.pow(nodepqDegree, alpha) + Math.pow(nodeqpDegree, alpha);
 
-      if ((newDegree*T > oldDegree) && (newDegree > highestBenefit)) {
-        bestPartner = nodeq;
-        highestBenefit = newDegree;
+      if (newAnnealing) {
+        Random random = new Random();
+        double acceptanceProbability = getAcceptanceProbability((int) oldDegree, (int) newDegree);
+        if (acceptanceProbability > random.nextDouble()) {
+          bestPartner = nodeq;
+          highestBenefit = acceptanceProbability;
+        }
+      } else {
+        if ((newDegree*T > oldDegree) && (newDegree > highestBenefit)) {
+          bestPartner = nodeq;
+          highestBenefit = newDegree;
+        }
       }
     }
 
