@@ -24,7 +24,7 @@ public class Jabeja {
   // Settings
   private boolean newAnnealing = true;
   private boolean task2_2 = true;
-  private boolean bonusTask = false;
+  private boolean bonusTask = true;
 
   //-------------------------------------------------------------------
   public Jabeja(HashMap<Integer, Node> graph, Config config) {
@@ -34,12 +34,12 @@ public class Jabeja {
     this.numberOfSwaps = 0;
     this.config = config;
     if (newAnnealing) {
-      config.setDelta((float) 0.8); // test1=0.9; test2=0.8
-      this.T = 1;
+      config.setDelta((float) 0.9); // test1=0.9; test2=0.8
+      config.setTemperature((float) 1);
     } else {
-      this.T = config.getTemperature();
       config.setDelta((float) 0.003);
     }
+    this.T = config.getTemperature();
   }
 
 
@@ -65,13 +65,16 @@ public class Jabeja {
     if (newAnnealing) {
       rounds++;
       if (T > min_T) {
-        T = T * config.getDelta();
-      } else {
+        T = customTemperatureReduction(rounds);
+      } 
+      else { // When T is smaller than the minimum temperature, 
         T = min_T;
       }
-      if (rounds % 400 == 0 && task2_2) {
+      
+      if (rounds % 400 == 0  && task2_2) {
         T = 1;
-        rounds = 0;
+        //rounds = 0;
+        
       }
     } 
     else {
@@ -83,21 +86,22 @@ public class Jabeja {
 
   }
 
+  private float customTemperatureReduction(int round) {
+    // For bonus task
+    if (bonusTask) {
+      T *= 1000 / (1000 + round/3);
+    }
+    else {
+      T *= config.getDelta();}
+    return T;
+  }
+
   private double getAcceptanceProbability(double oldDegree, double newDegree) {
     // The acceptance probability function receives the previous cost, the new cost,
     // and the present temperature, then outputs a value ranging from 0 to 1.
     // This value serves as an advisory on the advisability of transitioning to the new solution.
 
-    if (bonusTask) {
-      return 0.5;
-    } else {
-      double ap = Math.exp((newDegree - oldDegree) / T);
-      if (ap > 1) {
-        return 1;
-      } else {
-        return ap;
-      }
-    }
+    return Math.exp((newDegree - oldDegree) / T); 
   }
 
   /**
@@ -119,7 +123,8 @@ public class Jabeja {
             || config.getNodeSelectionPolicy() == NodeSelectionPolicy.RANDOM) {
       // if local policy fails then randomly sample the entire graph
       // TODO
-      partner = findPartner(nodeId, getSample(nodeId));
+      if (partner == null)
+        partner = findPartner(nodeId, getSample(nodeId));
     }
 
     // swap the colors
@@ -156,7 +161,9 @@ public class Jabeja {
       if (newAnnealing) {
         Random random = new Random();
         double acceptanceProbability = getAcceptanceProbability(oldDegree, newDegree);
-        if (acceptanceProbability > random.nextDouble()) {
+        if (acceptanceProbability > random.nextDouble() 
+            && newDegree != oldDegree 
+            && acceptanceProbability > highestBenefit) {
           bestPartner = nodeq;
           highestBenefit = acceptanceProbability;
         }
