@@ -21,10 +21,12 @@ public class Jabeja {
   private boolean resultFileCreated = false;
   private int rounds = 0;
   private final float min_T = (float) 0.00001;
-  // Settings
-  private boolean newAnnealing = true;
-  private boolean task2_2 = true;
-  private boolean bonusTask = true;
+  // ___Settings___
+  // Enable (true) or disable (false) the following settings to test different set-ups. 
+  private boolean newAnnealing = true;  // Use new annealing function
+  private boolean task2_2 = true;       // Reset temperature to 1 every 400 rounds
+  private boolean bonusTaskVer1 = true; // Decrease temperature 
+  private boolean bonusTaskVer2 = true; // Gaussian distribution
 
   //-------------------------------------------------------------------
   public Jabeja(HashMap<Integer, Node> graph, Config config) {
@@ -88,12 +90,11 @@ public class Jabeja {
 
   private float customTemperatureReduction(int round) {
     // For bonus task
-    if (bonusTask) {
-      T *= 1000 / (1000 + round/3);
+    if (bonusTaskVer1) {
+      return T *= 1000 / (1000 + round/3); 
     }
     else {
-      T *= config.getDelta();}
-    return T;
+      return T *= config.getDelta();}
   }
 
   private double getAcceptanceProbability(double oldDegree, double newDegree) {
@@ -101,13 +102,19 @@ public class Jabeja {
     // and the present temperature, then outputs a value ranging from 0 to 1.
     // This value serves as an advisory on the advisability of transitioning to the new solution.
 
-    return Math.exp((newDegree - oldDegree) / T); 
+    if (bonusTaskVer2) {
+      return Math.exp((1 / oldDegree - 1 / newDegree) / T);
+    }
+    else {
+      return Math.exp((newDegree - oldDegree) / T); 
+    }
+    
   }
 
   /**
    * Sample and swap algorith at node p
    * @param nodeId
-   */
+   */ 
   private void sampleAndSwap(int nodeId) {
     Node partner = null;
     Node nodep = entireGraph.get(nodeId);
