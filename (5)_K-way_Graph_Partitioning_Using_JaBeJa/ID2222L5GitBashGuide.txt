@@ -1,0 +1,32 @@
+___ ID2222 L5 GitBash___
+ [insert för paste]
+ 
+cd /C/Users/alexa/OneDrive/KTH\ grejer/ID2222\ Data\ Mining/Lab\ assignments/Lab\ 5
+
+./compile.sh
+
+./run.sh -graph ./graphs/add20.graph
+./run.sh -graph ./graphs/3elt.graph
+./run.sh -graph ./graphs/twitter.graph
+
+./plot.sh output/{replace with filename from 'output' folder}
+
+./plot.sh output/add20.graph_NS_HYBRID_GICP_ROUND_ROBIN_T_2.0_D_0.003_RNSS_3_URSS_6_A_2.0_R_1000.txt
+./plot.sh output/3elt.graph_NS_HYBRID_GICP_ROUND_ROBIN_T_2.0_D_0.003_RNSS_3_URSS_6_A_2.0_R_1000.txt
+./plot.sh output/twitter.graph_NS_HYBRID_GICP_ROUND_ROBIN_T_2.0_D_0.003_RNSS_3_URSS_6_A_2.0_R_1000.txt
+
+./plot.sh output/add20.graph_NS_HYBRID_GICP_ROUND_ROBIN_T_1.0_D_0.9_RNSS_3_URSS_6_A_2.0_R_1000.txt
+./plot.sh output/3elt.graph_NS_HYBRID_GICP_ROUND_ROBIN_T_1.0_D_0.9_RNSS_3_URSS_6_A_2.0_R_1000.txt
+./plot.sh output/twitter.graph_NS_HYBRID_GICP_ROUND_ROBIN_T_1.0_D_0.9_RNSS_3_URSS_6_A_2.0_R_1000.txt
+
+./plot.sh output/add20.graph_NS_HYBRID_GICP_ROUND_ROBIN_T_1.0_D_0.9_RNSS_3_URSS_6_A_2.0_R_1000.txt
+./plot.sh output/3elt.graph_NS_HYBRID_GICP_ROUND_ROBIN_T_1.0_D_0.9_RNSS_3_URSS_6_A_2.0_R_1000.txt
+./plot.sh output/twitter.graph_NS_HYBRID_GICP_ROUND_ROBIN_T_1.0_D_0.9_RNSS_3_URSS_6_A_2.0_R_1000.txt
+
+./plot.sh output/add20.graph_NS_HYBRID_GICP_ROUND_ROBIN_T_1.0_D_0.9_RNSS_3_URSS_6_A_2.0_R_1000.txt
+./plot.sh output/3elt.graph_NS_HYBRID_GICP_ROUND_ROBIN_T_1.0_D_0.9_RNSS_3_URSS_6_A_2.0_R_1000.txt
+./plot.sh output/twitter.graph_NS_HYBRID_GICP_ROUND_ROBIN_T_1.0_D_0.9_RNSS_3_URSS_6_A_2.0_R_1000.txt
+
+./plot.sh output/
+./plot.sh output/
+./plot.sh output/
